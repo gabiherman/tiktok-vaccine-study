@@ -1,1 +1,0 @@
-Repo for our tiktok study - as of June 2021 this is only for the purposes of downloading tiktok metadata
