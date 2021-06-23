@@ -5,13 +5,13 @@ api = TikTokApi.get_instance()
 #i don't think I need this if I'm not downloading?
 #custom_did = str(random.randint(10000, 99999999))
 #pull the tiktoks
-tiktoks = api.byHashtag("covidvaccine", count=10)
+#tiktoks = api.byHashtag("covidvaccine", count=10)
 
-def construct_tiktok_url(t):
-    author=str(t['author']['uniqueId'])
-    num=str(t['id'])
-    url= 'https://www.tiktok.com/@'+author+'/video/'+num
-    return url
+#def construct_tiktok_url(t):
+#    author=str(t['author']['uniqueId'])
+#    num=str(t['id'])
+#    url= 'https://www.tiktok.com/@'+author+'/video/'+num
+#    return url
 
 #print(api.get_user("annie_wu_22"))
 
@@ -27,3 +27,8 @@ def construct_tiktok_url(t):
 #    out.write(data)
 
 
+author_info = api.get_user('brandongrogan61')
+print(author_info.keys())
+followers = author_info['userInfo']['stats']['followerCount']
+
+print(followers)
