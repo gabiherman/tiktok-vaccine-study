@@ -13,11 +13,17 @@ def construct_tiktok_url(t):
     url= 'https://www.tiktok.com/@'+author+'/video/'+num
     return url
 
+#print(api.get_user("annie_wu_22"))
+
+#for follower count it's api.get_user[stats][followerCount]
+
 #print(tiktoks[0].keys())
-#print(tiktoks[0])
+#print(tiktoks[0]['author'])
 
 #url is https://www.tiktok.com/@[['author']['uniqueId']]/video/['id']
 
-data=api.get_video_by_url(construct_tiktok_url(tiktoks[0]))
-with open("video.mp4", "wb") as out:
-    out.write(data)
+#data=api.get_video_by_url(construct_tiktok_url(tiktoks[0]))
+#with open("out/video.mp4", "wb") as out:
+#    out.write(data)
+
+
