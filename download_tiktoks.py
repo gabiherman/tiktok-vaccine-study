@@ -41,7 +41,7 @@ def download_tiktok(url):
 verifyFp="verify_kqlmgn2f_sgABDdgW_KdLv_46hN_87VW_PRVAVQvPspDs"
 api = TikTokApi.get_instance(custom_verifyFp=verifyFp, use_test_endpoints=True)
 
-tiktoks = api.byHashtag("covidvaccine", count=150,custom_verifyFp=verifyFp)
+tiktoks = api.byHashtag("covidvaccine", count=250,custom_verifyFp=verifyFp)
 
 with open('./out/all_dicts.json', 'w') as f:
     json.dump(tiktoks, f, indent=True)
@@ -50,7 +50,7 @@ for t in tiktoks:
     dat.append(extract_metadata(t))
 
 df = pd.DataFrame(dat)
-df.to_csv('./out/tiktok_metadata_07-01-2021_2055.csv')
+df.to_csv('./out/tiktok_metadata_07-01-2021_2112.csv')
 print("success")
 
 
