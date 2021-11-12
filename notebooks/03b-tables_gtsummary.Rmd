@@ -1,0 +1,66 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+
+```{r libraries, echo=FALSE}
+library(readxl)
+library(tidyverse)
+library(kableExtra)
+library(qwraps2)
+library(gtsummary)
+
+theme_gtsummary_language("en", big.mark = "")
+```
+
+
+
+
+```{r read in data, echo=FALSE}
+tik_df <- read_excel("../data_cleaned_inclusions_19-oct.xlsx")
+
+tik_df$author_followers = as.double(tik_df$author_followers)
+```
+
+table_1 <- tik_df %>% group_by(support_vaccine) %>% summarize(n=n(), median_plays=median_iqr(plays, na_rm=TRUE), median_comments=median(comments, na.rm=TRUE), median_shares=median(shares, na.rm=TRUE), median_followers=median(author_followers, na.rm=TRUE), percent_female= sum(gender=="Female")/n())  %>%mutate_all(as.character) %>% pivot_longer(cols = n:percent_female) %>% pivot_wider(names_from=support_vaccine, values_from=value)
+
+```{r}
+df2 <- tik_df %>% select(support_vaccine, plays,comments,shares,author_followers,gender, hcp)
+
+gt1 <- tbl_summary(df2, by=support_vaccine, missing="no")
+
+gt1%>% modify_header(update= list(stat_1 ~ "**Against Vaccine**, (N = {n})", stat_2 ~ "**Pro-vaccine**, (N = {n})")) %>% modify_caption("Comparing metadata between antivax and pro vax tiktoks:", text_interpret = c("md"))
+```
+
+```{r}
+gt2 <- tbl_summary(df2, by=hcp, missing="no")
+
+gt2%>% modify_header(update= list(stat_1 ~ "**Layperson**, (N = {n})", stat_2 ~ "**Healthcare Expert**, (N = {n})")) modify_caption("Comparing metadata between tiktoks from laypeople vs healthcare experts:", text_interpret = c("md"))
+```
+```{r}
+df3 <- tik_df %>% select( hcp, verified_hcp) %>% filter(hcp==1)
+
+
+df3 %>% tbl_summary(
+)
+
+```
+```{r}
+df4 <- tik_df %>% select(support_vaccine, myth_referenced) %>% filter(support_vaccine==0) 
+
+#if there is a comma add "multiple myths"
+
+df4 %>% tbl_summary()
+```
+
+```{r}
+
+```
+

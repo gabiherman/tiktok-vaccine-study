@@ -1,0 +1,83 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(readxl)
+library(tidyverse)
+
+```
+
+```{r}
+tik_df <- read_excel("../data_cleaned_inclusions_19-oct.xlsx")
+
+tik_df$author_followers = as.double(tik_df$author_followers)
+
+```
+Note: there's one author here whose account was deleted but tiktoks weren't... the API can't pull his followers but I can find a manual count. Should I put those in? (which(is.na(tik_df$author_followers)) is row 52)
+
+
+Let's start with describing the data with some simple tables: (this first one will be ugly)
+
+```{r}
+summary(tik_df)
+```
+
+```{r}
+
+tik_df %>% group_by(support_vaccine) %>% summarize(n=n(), median_plays=median(plays, na.rm=TRUE), median_comments=median(comments, na.rm=TRUE), median_shares=median(shares, na.rm=TRUE), median_followers=median(author_followers, na.rm=TRUE), percent_female= sum(gender=="Female")/n())
+
+```
+These stats look very different between vaccine supporters and not. Let's make some graphs to see what's going on. 
+
+
+First some sanity checks - we expect to see a positive correlation b/w plays and shares, for example. This looks more or less legit in those who support and don't support vaccine. This isn't very important imo, don't put too much stock into it.
+```{r}
+p <- ggplot(tik_df, aes(log(plays), log(shares))) #log-ing them both so i can see trends.
+
+p+geom_jitter() + facet_grid(. ~ support_vaccine) + geom_smooth(method=lm)
+
+```
+
+
+
+Plays
+```{r}
+p <- ggplot(tik_df, aes(factor(support_vaccine), shares))
+
+p+geom_violin()+geom_jitter()   + scale_x_discrete(labels = c("No", "Yes")) + xlab("supports vaccination")
+```
+Followers
+```{r}
+p <- ggplot(tik_df, aes(factor(support_vaccine), shares))
+
+p+geom_violin()+geom_jitter()
+```
+
+My N is fairly small but I'm still curious to compare health care expert content to layperson produced content
+```{r}
+tik_df %>% group_by(hcp) %>% summarize(n=n(), median_plays=median(plays, na.rm=TRUE), median_comments=median(comments, na.rm=TRUE), median_shares=median(shares, na.rm=TRUE), median_followers=median(author_followers, na.rm=TRUE), percent_female= sum(gender=="Female")/n())
+```
+
+```{r}
+p <- ggplot(tik_df, aes(factor(hcp), plays))
+
+p+geom_violin()+geom_jitter()
+```
+```{r}
+p <- ggplot(tik_df, aes(factor(hcp), author_followers))
+
+p+geom_violin()+geom_jitter()
+```
+```{r}
+p <- ggplot(tik_df, aes(factor(hcp), comments))
+
+p+geom_violin()+geom_jitter()
+```

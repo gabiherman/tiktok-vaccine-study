@@ -1,0 +1,87 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(readxl)
+library(tidyverse)
+
+```
+
+```{r}
+dat <- read_excel("../data/final_ds_october.xlsx", na=c("", "n/a","N/A", "NA"))
+meta <- read_csv("../out/tiktok_metadata_07-01-2021_2112.csv")
+
+```
+
+
+Tidy up the spreadsheets
+```{r}
+dat_cleaned <- dat
+  # mutate(genre_satire_y_n= ifelse(grepl("Satire",genre), "Y", "N"),
+  #       genre_commentary_y_n = ifelse(grepl("Commentary", genre), "Y", "N"),
+  #       genre_story_y_n = ifelse(grepl("Story Telling", genre), "Y","N"),
+  #       genre_skit_y_n = ifelse(grepl("Skit", genre), "Y", "N"), 
+  #       genre_silent_y_n = ifelse(grepl("Silent", genre), "Y", "N"), 
+  #       genre_stitch_y_n = ifelse(grepl("Stitch", genre), "Y", "N"),
+  #       genre_docu_y_n = ifelse(grepl("Documentary", genre), "Y", "N"),
+  #       genre_dance_y_n = ifelse(grepl("Dance", genre), "Y", "N"), 
+  #       myth_referenced_y_n = ifelse(grepl("No myth", myth_referenced), "N", "Y"))
+
+```
+todo: add the rest of the columns for genre, add columns for myth referenced
+go to source data and change not applicable 
+fix "correct" N/A yes no unclear
+clean up gender columns
+fix $included video unavailable
+
+Merge the metadata with the scoring
+```{r}
+merged <- dat_cleaned %>% left_join(meta) %>% filter(included == "Yes")
+merged$author_followers <- as.numeric(merged$author_followers)
+
+```
+
+
+```{r}
+
+merged %>% group_by(support_vaccine) %>% summarize(median_shares=median(shares, na.rm=TRUE), median_followers=median(author_followers,na.rm=TRUE),median_plays=median(plays,na.rm=TRUE),n=n()) 
+#test %>% summarize(median_shares=median(shares), median_followers=median(author_followers,na.rm=TRUE),median_shares=median(shares, na.rm=TRUE), median_plays=median(plays, na.rm=TRUE), n=n()) 
+
+```
+
+
+```{r}
+
+merged %>% group_by(hcp) %>% summarize(median_shares=median(shares, na.rm=TRUE), median_followers=median(author_followers,na.rm=TRUE),median_plays=median(plays,na.rm=TRUE),n=n()) 
+```
+```{r}
+p <- ggplot(merged, aes(factor(support_vaccine), author_followers))
+p+geom_violin()+geom_jitter()
+```
+
+```{r}
+p <- ggplot(merged, aes(factor(support_vaccine), shares))
+p+geom_violin()+geom_jitter()
+```
+
+```{r}
+p <- ggplot(merged, aes(factor(support_vaccine), plays))
+
+p+geom_violin()+geom_jitter()
+```
+
+TODO: recode to 1s and 0s
+TODO: make a verified y/n column
+
+
+```{r}
+#write_csv(merged,"../data/data_cleaned_inclusions_31-oct.csv", na = "NA")
+```
+
